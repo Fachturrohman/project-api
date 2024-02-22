@@ -60,7 +60,7 @@ class ApiController extends Controller
         $external_api = $this->getExternalApi();
 
         // Cari NIM 9352078461
-        $result = $this->searchByNIM($external_api, '9352078461');
+        $result = $this->searchByField($external_api, 'NIM', '9352078461');
 
         return response()->json($result);
     }
@@ -70,7 +70,7 @@ class ApiController extends Controller
         $external_api = $this->getExternalApi();
 
         // Cari nama Turner Mia
-        $result = $this->searchByName($external_api, 'Turner Mia');
+        $result = $this->searchByField($external_api, 'NAMA', 'Turner Mia');
 
         return response()->json($result);
     }
@@ -80,35 +80,16 @@ class ApiController extends Controller
         $external_api = $this->getExternalApi();
 
         // Cari YMD 20230405
-        $result = $this->searchByYMD($external_api, '20230405');
+        $result = $this->searchByField($external_api, 'YMD', '20230405');
 
         return response()->json($result);
     }
 
-    public function searchByNIM($data, $name)
+    public function searchByField($data, $fields, $value)
     {
-        $result = array_values(array_filter($data, function ($item) use ($name) {
-            return stripos($item['NIM'], $name) !== false;
-        }));
-
-        return isset($result[0]) ? (object) $result[0] : null;
-    }
-
-    public function searchByName($data, $name)
-    {
-        $result = array_values(array_filter($data, function ($item) use ($name) {
-            return stripos($item['NAMA'], $name) !== false;
-        }));
-        
-        return isset($result[0]) ? (object) $result[0] : null;
-    }
-
-    public function searchByYMD($data, $name)
-    {
-        $result = array_values(array_filter($data, function ($item) use ($name) {
-            return stripos($item['YMD'], $name) !== false;
-        }));
-        
-        return isset($result[0]) ? (object) $result[0] : null;
+        return collect($data)
+        ->first(function ($item) use ($fields, $value) {
+            return stripos($item[$fields], $value) !== false;
+        });
     }
 }
